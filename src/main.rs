@@ -1,15 +1,25 @@
 mod doi;
 mod http;
 mod bib;
-mod md;
+mod note;
+
 use std::env::args;
 use std::error::Error;
+use std::process;
 
 fn main() {
     let arg:String = get_arguments()
-        .unwrap_or_else(|| panic!("{:?}", "Not enough command line arguments."));
+        .unwrap_or_else(|| {
+            eprintln!("{:?}", "Not enough command line arguments.");
+            process::exit(1);
+        });
     new_note_from_doi(arg)
-        .unwrap_or_else(|err| panic!("{:?}", err)); 
+        .unwrap_or_else(|err| exit_on_error(err)); 
+}
+
+fn exit_on_error(err: Box<dyn Error>) {
+    eprintln!("{}", err);
+    process::exit(1);
 }
 
 fn new_note_from_doi(arg: String) -> Result<(), Box<dyn Error>> {
@@ -24,13 +34,17 @@ fn new_note_from_doi(arg: String) -> Result<(), Box<dyn Error>> {
     // Parse new entry from http reponse 
     let entry = bib::entry_from_bibtext(response.as_str())?;
 
-    // Load bibliography, add new entry and save 
+    // Load bibliography 
     let mut db = bib::DB::load()?;
+
+    // Add new entry 
     db.add(entry)?;
-    db.save()?;
 
     // Create markdown notes 
-    md::create_notes(db.get_bibliography())?;
+    note::new(db.get_bibliography())?;
+
+    // Save to .bib 
+    db.save()?;
 
     Ok(())
 }
