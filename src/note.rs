@@ -19,6 +19,7 @@ fn file_exists(key: &String) -> bool {
 fn create_and_write_to_file(filename: &str, content: &str) -> Result<(), io::Error> {
     let mut file = File::create(filename)?;
     file.write_all(content.as_bytes())?;
+    println!("Created note: {}", filename);
     Ok(())
 }
 
@@ -45,7 +46,7 @@ fn get_output_field(entry: &Entry) -> citenotes::Result<(String, String, String)
 
 fn create_md_output(entry: &Entry) -> citenotes::Result<String>{
     let (title, authors, url) = get_output_field(entry)?;
-    Ok(format!("# {}\n\n*{}*\n{}\n---\n#no_notes", title, authors, url))
+    Ok(format!("# {}\n\nAuthors: {}\nLink:    {}\n\n---\n\n#todo-notes", title, authors, url))
 }
 
 pub fn new(bibliography: &Bibliography) -> Result<(), Box<dyn Error>>{
