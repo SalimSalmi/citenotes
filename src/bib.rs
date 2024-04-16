@@ -1,4 +1,5 @@
 use std::io::Write;
+use regex::Regex;
 use std::fs::{OpenOptions, File};
 use biblatex::{Bibliography, Entry, DateValue, PermissiveType};
 use citenotes::CiteNoteError;
@@ -54,6 +55,11 @@ fn get_name(entry: &Entry) -> citenotes::Result<String> {
 fn get_bibkey(entry: &Entry) -> citenotes::Result<String> {
     let name = get_name(entry)?;
     let year = get_year(entry)?;
+    
+    // Remove special characters
+    let re = Regex::new(r"[^a-zA-Z0-9]").unwrap();
+    let name = re.replace_all(&name, "");
+
     Ok(format!("{}{}", name, year))
 }
 

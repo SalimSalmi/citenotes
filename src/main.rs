@@ -37,6 +37,9 @@ fn new_note_from_doi(arg: String) -> Result<(), Box<dyn Error>> {
     // Load bibliography 
     let mut db = bib::DB::load()?;
 
+    // Print key
+    println!("{}",&entry.key);
+
     // Add new entry 
     db.add(entry)?;
 
