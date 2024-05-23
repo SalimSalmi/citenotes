@@ -30,6 +30,7 @@ fn new_note_from_doi(arg: String) -> Result<(), Box<dyn Error>> {
     // Http request for bib data 
     let response = http::request_bib_with_doi(&url)?
         .replace("DOI", "doi");
+    // println!("{}",response.as_str());
 
     // Parse new entry from http reponse 
     let entry = bib::entry_from_bibtext(response.as_str())?;
